@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="IIS Web Application Name" description="" value="SSSHOPSERVER" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^D:\\learningData\\CN9\\Cloud\ computing\\SSSHOP\\SSSHOPSERVER\\SSSHOPSERVER\\obj\\Release\\netcoreapp2\.2\\PubTmp\\Out\\$" />
+  </parameter>
+</parameters>

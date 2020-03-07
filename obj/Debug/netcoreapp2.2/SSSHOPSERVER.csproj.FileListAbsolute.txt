@@ -1,0 +1,17 @@
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\bin\Debug\netcoreapp2.2\appsettings.Development.json
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\bin\Debug\netcoreapp2.2\appsettings.json
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\bin\Debug\netcoreapp2.2\libman.json
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\bin\Debug\netcoreapp2.2\Properties\launchSettings.json
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\bin\Debug\netcoreapp2.2\SSSHOPSERVER.deps.json
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\bin\Debug\netcoreapp2.2\SSSHOPSERVER.runtimeconfig.json
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\bin\Debug\netcoreapp2.2\SSSHOPSERVER.runtimeconfig.dev.json
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\bin\Debug\netcoreapp2.2\SSSHOPSERVER.dll
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\obj\Debug\netcoreapp2.2\SSSHOPSERVER.csprojAssemblyReference.cache
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\obj\Debug\netcoreapp2.2\SSSHOPSERVER.RazorAssemblyInfo.cache
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\obj\Debug\netcoreapp2.2\SSSHOPSERVER.RazorAssemblyInfo.cs
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\obj\Debug\netcoreapp2.2\SSSHOPSERVER.AssemblyInfoInputs.cache
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\obj\Debug\netcoreapp2.2\SSSHOPSERVER.AssemblyInfo.cs
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\obj\Debug\netcoreapp2.2\SSSHOPSERVER.RazorTargetAssemblyInfo.cache
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\bin\Debug\netcoreapp2.2\SSSHOPSERVER.pdb
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\obj\Debug\netcoreapp2.2\SSSHOPSERVER.dll
+D:\learningData\CN9\Cloud computing\SSSHOP\SSSHOPSERVER\SSSHOPSERVER\obj\Debug\netcoreapp2.2\SSSHOPSERVER.pdb
