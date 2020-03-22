@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace SSSHOPSERVER.Repositories
 {
-    interface IUSerRepository
+    public interface IUSerRepository
     {
-        User getUserByUsernameAndPassword(LoginRequest request);
+        Object getUserByUsernameAndPassword(LoginRequest request);
         object createUser(CreateUSerRequest request);
         bool deleteUser(int userId);
-        bool updateUser(UpdateUserRequest request);
+        bool updateUser(UpdateUserRequest request,int userId);
+        Object GenerateJwtToken(string email, User user, string Role);
     }
 }

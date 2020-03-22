@@ -5,7 +5,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using SSSHOPSERVER.EFModels;
@@ -14,55 +16,42 @@ using SSSHOPSERVER.Repositories;
 
 namespace SSSHOPSERVER.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/user")]
+    [EnableCors]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserController : Controller
     {
+
+        protected int GetUserId()
+        {
+            try
+            {
+                return int.Parse(this.User.Claims.First(i => i.Type == "UserId").Value);
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+
+
         IUSerRepository repository;
+
+        public UserController(IUSerRepository repository)
+        {
+            this.repository = repository;
+        }
+        [AllowAnonymous]
         [HttpPost("login")]
         public IActionResult login([FromBody] LoginRequest request)
         {
-            repository = new UserRepositoryImpl();
-            User user = repository.getUserByUsernameAndPassword(request);
+            //repository = new UserRepositoryImpl();
+            var user = repository.getUserByUsernameAndPassword(request);
             //just hard code here.  
             if (user != null)
             {
-
-                var now = DateTime.UtcNow;
-
-                var claims = new Claim[]
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, request.Username),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Iat, now.ToUniversalTime().ToString(), ClaimValueTypes.Integer64)
-                };
-
-                var signingKey = new SymmetricSecurityKey(Encoding.Default.GetBytes("SecretKeySSHOPSystems"));
-                var jwt = new JwtSecurityToken(
-                    issuer: "Iss",
-                    audience: "Aud",
-                    claims: claims,
-                    notBefore: now,
-                    expires: now.Add(TimeSpan.FromDays(30)),
-                    signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
-                );
-
-                var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-                var customerresponse = new
-                {
-                    user_id = user.UserId,
-                    full_name = user.FullName,
-                    email = user.Email,
-                    address = user.Address
-                };
-                var responseJson = new
-                {
-                    access_token = encodedJwt,
-                    expires_in = (int)TimeSpan.FromDays(30).TotalSeconds,
-                    customer = customerresponse
-                };
-
-                return Ok(responseJson);
+                return Ok(user);
             }
             else
             {
@@ -71,10 +60,11 @@ namespace SSSHOPSERVER.Controllers
         }
 
 
+        [AllowAnonymous]
         [HttpPost("create")]
         public IActionResult CreateUser([FromBody] CreateUSerRequest request)
         {
-            repository = new UserRepositoryImpl();
+            //repository = new UserRepositoryImpl();
             var webOwner = repository.createUser(request);
 
             if (webOwner != null) return Ok(webOwner);
@@ -83,10 +73,10 @@ namespace SSSHOPSERVER.Controllers
 
         [HttpDelete("delete")]
         [Authorize]
-        public IActionResult deleteUser(int userId)
+        public IActionResult deleteUser()
         {
-            repository = new UserRepositoryImpl();
-            bool result = repository.deleteUser(userId);
+            //repository = new UserRepositoryImpl();
+            bool result = repository.deleteUser(GetUserId());
             if (result) return Ok();
             return BadRequest();
         }
@@ -95,8 +85,8 @@ namespace SSSHOPSERVER.Controllers
         [Authorize]
         public IActionResult updateUser([FromBody] UpdateUserRequest request)
         {
-            repository = new UserRepositoryImpl();
-            bool result = repository.updateUser(request);
+            //repository = new UserRepositoryImpl();
+            bool result = repository.updateUser(request,GetUserId());
             if (result) return Ok();
             return BadRequest();
         }

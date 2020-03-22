@@ -41,6 +41,10 @@
       "frameworks": {
         "netcoreapp2.2": {
           "dependencies": {
+            "AWSSDK": {
+              "target": "Package",
+              "version": "[2.3.55.2, )"
+            },
             "BCrypt.Net": {
               "target": "Package",
               "version": "[0.1.0, )"
@@ -48,6 +52,10 @@
             "EntityFramework": {
               "target": "Package",
               "version": "[6.4.0, )"
+            },
+            "JWT": {
+              "target": "Package",
+              "version": "[6.1.0, )"
             },
             "Microsoft.AspNetCore.App": {
               "suppressParent": "All",
@@ -73,6 +81,18 @@
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
               "version": "[2.2.4, )"
+            },
+            "NSwag.AspNetCore": {
+              "target": "Package",
+              "version": "[13.2.5, )"
+            },
+            "NSwag.Core": {
+              "target": "Package",
+              "version": "[13.2.5, )"
+            },
+            "Steeltoe.Discovery.ClientCore": {
+              "target": "Package",
+              "version": "[2.4.2, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

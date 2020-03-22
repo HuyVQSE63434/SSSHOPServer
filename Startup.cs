@@ -3,18 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SSSHOPSERVER.EFModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using SSSHOPSERVER.EFModels;
+using NSwag.Generation.Processors.Security;
+using NSwag;
+using SSSHOPSERVER.Repositories;
 
 namespace SSSHOPSERVER
 {
@@ -30,55 +34,86 @@ namespace SSSHOPSERVER
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            
-            services.AddDbContext<ShoeShopDBContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DbConnection"),
-                b => b.MigrationsAssembly(typeof(Startup).Assembly.FullName)));
-
-            services.AddSwaggerGen((option) =>
+            //CORS
+            services.AddCors(options =>
             {
-                option.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                options.AddDefaultPolicy(
+                builder =>
                 {
-                    Title = "Api for SSShop",
-                    Version = "v1"
+                    builder.WithOrigins("*")
+                    .SetIsOriginAllowedToAllowWildcardSubdomains()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin();
                 });
             });
 
-            //authorize
-            var signingKey = new SymmetricSecurityKey(Encoding.Default.GetBytes("SecretKeySSHOPSystems"));
-            var tokenValidationParameters = new TokenValidationParameters
+            //====== Add AddAuthentication =====
+            string domain = $"https://{Configuration["Auth0:Domain"]}/";
+            services.AddAuthentication(options =>
             {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = signingKey,
-                ValidateIssuer = true,
-                ValidIssuer = "Iss",
-                ValidateAudience = true,
-                ValidAudience = "Aud",
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero,
-                RequireExpirationTime = true,
-            };
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+               .AddJwtBearer(x =>
+               {
+                   x.RequireHttpsMetadata = false;
+                   x.SaveToken = true;
+                   x.Authority = domain;
+                   x.Audience = Configuration["Auth0:ApiIdentifier"];
+                   x.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       //NameClaimType = ClaimTypes.NameIdentifier
+                       ValidIssuer = Configuration["JwtIssuer"],
+                       ValidAudience = Configuration["Auth0:ApiIdentifier"],
+                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
+                       ClockSkew = TimeSpan.Zero, // remove delay of token when expire
+                       RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+                   };
+               });
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(x =>
-                    {
-                        x.RequireHttpsMetadata = false;
-                        x.TokenValidationParameters = tokenValidationParameters;
-                    });
+            services.AddScoped<IUSerRepository, UserRepositoryImpl>();
+            services.AddScoped<IProductRepository, ProductRepositoryImpl>();
+            services.AddScoped<IOrderRepository, OrderRepositoryImpl>();
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+
+            services.AddDbContext<ShoeShopDBContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DbConnection"),
+                b => b.MigrationsAssembly(typeof(Startup).Assembly.FullName)));
+
+
+
+            //add swagger
+            services.AddOpenApiDocument(config =>
+            {
+                config.PostProcess = document =>
+                {
+                    document.Info.Version = "v1";
+                    document.Info.Title = string.Format($"Campaign Service");
+                    document.Info.Description = string.Format($"Developer Documentation Page For Campaign Service");
+                };
+
+                config.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+                {
+                    Type = OpenApiSecuritySchemeType.ApiKey,
+                    Name = "Authorization",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Description = "Using: Bearer + your jwt token"
+                });
+
+                config.OperationProcessors.Add(
+                        new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+            });
+            services.AddAuthorization();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
 
-            //Enable middleware to serve generated swagger as a JSON endpoint.
-            app.UseSwagger();
-
-            //spercify the Swagger JSON endpoint
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Api for SSShop v1");
-            });
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
 
             if (env.IsDevelopment())
             {
@@ -89,7 +124,7 @@ namespace SSSHOPSERVER
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            app.UseCors();
             app.UseHttpsRedirection();
             app.UseMvc();
 
